@@ -23,6 +23,7 @@ export class AppComponent implements AfterViewInit{
     [0,1,2]
   ]
   winner : boolean = false;
+  player : boolean = false;
 
   ngAfterViewInit() {
     this.possibilities = document.querySelectorAll('.possibilities');
@@ -35,7 +36,7 @@ export class AppComponent implements AfterViewInit{
     }
   }
   putSelect(event: Event) {
-    this.winner = false;
+    this.player = false;
     let element = event.target as HTMLElement;
     if (element && this.select == false && element.textContent == '') {
       element.textContent = "x";
@@ -48,7 +49,7 @@ export class AppComponent implements AfterViewInit{
   }
 
   turnPC(){
-    this.winner = true;
+    this.player = true;
     const elementsArray: Array<HTMLElement> = Array.from(this.possibilities);
     const control : boolean = elementsArray.every(obj => obj['textContent'] !== '');
     if (!control) {
@@ -76,8 +77,8 @@ export class AppComponent implements AfterViewInit{
         if (controlPosibility.length == 3) {
           const iqual: boolean = controlPosibility.every(option => option == controlPosibility[0])
           if (iqual) {
-            alert(`¡Ganó ${controlPosibility[0]}!`);
-            this.winner = true;
+            alert(`${controlPosibility[0]} is the winner!`);
+            this.player = true;
             continueExecution = false; 
             return; // 
           } else {
@@ -94,7 +95,7 @@ export class AppComponent implements AfterViewInit{
       }
     });
   
-    if (!this.winner && continueExecution) { 
+    if (!this.player && continueExecution) { 
       this.turnPC();
     }
   }
