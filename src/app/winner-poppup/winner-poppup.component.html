@@ -1,0 +1,9 @@
+<div class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 shadow-lg" *ngIf="data.player">
+    <h2 class="mb-4">Congratulations you'r the winner!!</h2>
+    <button mat-raised-button color="primary" id="play-again-btn" (click)="reset()">Play again</button>
+</div>
+<div class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 shadow-lg" *ngIf="!data.player">
+    <h2 class="mb-4">Your lose, try again you can do it!!</h2>
+    <button mat-raised-button color="primary" id="play-again-btn" (click)="reset()">Try again</button>
+</div>
+  

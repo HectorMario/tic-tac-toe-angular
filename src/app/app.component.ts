@@ -1,32 +1,36 @@
 import { Component, AfterViewInit } from '@angular/core';
-
+import { WinnerPoppupComponent } from './winner-poppup/winner-poppup.component';
+import { MatDialog } from '@angular/material/dialog';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements AfterViewInit{
+export class AppComponent implements AfterViewInit {
   title = 'tic-tac-toe-angular';
-  cells: Array<number> = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  cells: Array<number> = [0, 1, 2, 3, 4, 5, 6, 7, 8];
   options: Array<string> = ['x', 'o'];
   select: boolean = false;
-  possibilities!: NodeListOf<HTMLElement> 
+  possibilities!: Array<HTMLElement>
   winConditions: Array<Array<number>> = [
-    [0,1,2],
-    [0,3,6],
-    [3,4,5],
-    [6,7,8],
-    [1,4,7],
-    [2,5,8],
-    [2,4,6],
-    [0,4,8],
-    [0,1,2]
+    [0, 1, 2],
+    [0, 3, 6],
+    [3, 4, 5],
+    [6, 7, 8],
+    [1, 4, 7],
+    [2, 5, 8],
+    [2, 4, 6],
+    [0, 4, 8],
+    [0, 1, 2]
   ]
-  winner : boolean = false;
-  player : boolean = false;
+  winner: boolean = false;
+  player: boolean = true;
 
+  constructor(
+    private dialog: MatDialog
+  ) { }
   ngAfterViewInit() {
-    this.possibilities = document.querySelectorAll('.possibilities');
+    this.possibilities = Array.from(document.querySelectorAll('.possibilities'));
   }
   changeSelect(option: string) {
     if (option == 'o') {
@@ -36,68 +40,82 @@ export class AppComponent implements AfterViewInit{
     }
   }
   putSelect(event: Event) {
-    this.player = false;
+    this.player = true;
     let element = event.target as HTMLElement;
     if (element && this.select == false && element.textContent == '') {
       element.textContent = "x";
       element.classList.add('text-red-500');
-    } else if(element && this.select == true && element.textContent == '') {
+      this.winControl();
+    } else if (element && this.select == true && element.textContent == '') {
       element.textContent = "o";
       element.classList.add('text-white');
+      this.winControl();
     }
-    this.winControl();  
+
   }
 
-  turnPC(){
-    this.player = true;
+  turnPC() {
+    this.player = false;
     const elementsArray: Array<HTMLElement> = Array.from(this.possibilities);
-    const control : boolean = elementsArray.every(obj => obj['textContent'] !== '');
+    const control: boolean = elementsArray.every(obj => obj['textContent'] !== '');
     if (!control) {
       let numberRandom: number = Math.floor(Math.random() * 9);
-      const choosePc : HTMLElement = this.possibilities[numberRandom];
+      const choosePc: HTMLElement = this.possibilities[numberRandom];
       if (choosePc.textContent == "" && this.select == false) {
         choosePc.textContent = 'o';
         choosePc.classList.add('text-white');
-      } else if (choosePc.textContent == "" && this.select == true){
+        this.winControl();
+      } else if (choosePc.textContent == "" && this.select == true) {
         choosePc.textContent = 'x';
         choosePc.classList.add('text-red-500');
+        this.winControl();
       } else {
         this.turnPC()
       }
     }
-    this.winControl();   
   }
 
   winControl() {
     let controlPosibility: Array<string | null> = [];
-    let continueExecution = true; 
-  
+    let continueExecution = true;
+
     this.winConditions.forEach(conditions => {
-      if (continueExecution) { 
+      if (continueExecution) {
+        controlPosibility = [];
+        conditions.forEach(condition => {
+          if (this.possibilities[condition].textContent !== '') {
+            controlPosibility.push(this.possibilities[condition].textContent)
+          }
+        });
         if (controlPosibility.length == 3) {
           const iqual: boolean = controlPosibility.every(option => option == controlPosibility[0])
           if (iqual) {
-            alert(`${controlPosibility[0]} is the winner!`);
-            this.player = true;
-            continueExecution = false; 
-            return; // 
+            continueExecution = false;
+            this.openPoppup(controlPosibility[0])
+            return; 
           } else {
             controlPosibility = [];
           }
-        } else {
-          controlPosibility = [];
-          conditions.forEach(condition => {
-            if (this.possibilities[condition].textContent !== '') {
-              controlPosibility.push(this.possibilities[condition].textContent)
-            }
-          });
         }
+
       }
     });
-  
-    if (!this.player && continueExecution) { 
+
+    if (this.player && continueExecution) {
       this.turnPC();
     }
   }
-  
+
+  openPoppup(winer: string | null): void {
+    const dialogRef = this.dialog.open(WinnerPoppupComponent, {
+      data: {winer: winer, player: this.player, cells: this.possibilities}
+    })
+  }
+
+  resetCells(){
+    this.possibilities.forEach(element => {
+      element.textContent = '';
+      element.classList.remove('text-white')
+    });
+  }
 }

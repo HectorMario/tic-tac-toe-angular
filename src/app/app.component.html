@@ -1,7 +1,7 @@
 <div class="ms-container bg-slate-900 h-screen justify-center flex items-center flex-col">
+  <button mat-raised-button color="primary" class="mb-5" (click)="resetCells()">Reset</button>
   <div class="container grid grid-cols-3 gap-2 w-96">
     <div class="cells h-28 border-4 border-indigo-500 cursor-pointer text-6xl flex justify-center pt-3 possibilities"   *ngFor="let cell of cells" (click)="putSelect($event)" [id]="cell">
-      
     </div>
   </div>
   <div class="select mt-6">
@@ -11,7 +11,4 @@
       </div>
     </div>
   </div>
-</div>
-<div class="" #theEnd>
-  
 </div>
